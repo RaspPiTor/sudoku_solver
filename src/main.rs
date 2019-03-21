@@ -73,6 +73,14 @@ impl Solver {
                 if { result.len() < min_length } {
                     match result.len() {
                         0 => return false,
+                        1 => {
+                            min_pos = *i;
+                            min_result.clear();
+                            for x in result {
+                                min_result.push(*x);
+                            }
+                            break;
+                        }
                         _ => {
                             min_length = result.len();
                             min_pos = *i;
@@ -105,7 +113,6 @@ impl Solver {
                     to_explore.push(i);
                 }
             }
-            //println!("{:?}", to_explore);
             let result = self.process(&mut to_explore, &mut route);
             if { result } {
                 self.routes.clear();
