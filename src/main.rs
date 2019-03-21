@@ -8,7 +8,6 @@ struct Solver {
     boxes: Vec<HashSet<u8>>,
     options: HashSet<u8>,
     solution: [u8; 81],
-
 }
 
 impl Solver {
@@ -35,7 +34,7 @@ impl Solver {
             columns: columns,
             boxes: boxes,
             options: options,
-            solution: [0; 81]
+            solution: [0; 81],
         }
     }
     fn generate(&mut self, square: usize, route: &[u8; 81]) {
@@ -126,8 +125,7 @@ fn main() {
         2, 7, 1, 7, 0, 0, 0, 0, 5, 4, 0, 6, 0, 0, 2, 0, 0, 0, 0, 0, 0,
     ];
     let mut s = Solver::new(sudoku);
-    while { !s.next() } {
-    }
+    while { !s.next() } {}
     let mut v: Vec<u8> = Vec::new();
     for i in s.solution.iter() {
         v.push(*i);
