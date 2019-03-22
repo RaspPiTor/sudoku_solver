@@ -123,7 +123,7 @@ impl Solver {
                 for x in 1..10 {
                     if row[x] && column[x] && cbox[x] {
                         result.push(x as u8);
-                        if { result.len() >= min_length } {
+                        if result.len() >= min_length {
                             break;
                         }
                     }
