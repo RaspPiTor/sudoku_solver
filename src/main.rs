@@ -54,21 +54,22 @@ impl Solver {
     }
     #[inline(never)]
     fn process(&mut self, routes: &mut Vec<Solver>) -> bool {
+        let mut result: Vec<u8> = Vec::with_capacity(9);
         for _ in 0..self.to_explore.len() {
             let mut min_length = 11;
             let mut min_pos = 0;
             let mut min_result: Vec<u8> = Vec::new();
             for i in self.to_explore.iter() {
-                let mut result: Vec<u8> = Vec::with_capacity(9);
+                result.clear();
                 let row = &self.rows[i / 9];
                 let column = &self.columns[i % 9];
                 let cbox = &self.boxes[i / 27 * 3 + i / 3 % 3];
                 for x in 1..10 {
                     if row[x] && column[x] && cbox[x] {
                         result.push(x as u8);
-                        //if { result.len() >= min_length } {
-                        //    break;
-                        //}
+                        if { result.len() >= min_length } {
+                            break;
+                        }
                     }
                 }
                 if result.len() < min_length {
@@ -76,17 +77,13 @@ impl Solver {
                         0 => return false,
                         1 => {
                             min_pos = *i;
-                            min_result.clear();
-                            min_result = result;
+                            min_result = result.clone();
                             break;
                         }
                         _ => {
                             min_length = result.len();
                             min_pos = *i;
-                            min_result.clear();
-                            for x in result {
-                                min_result.push(x);
-                            }
+                            min_result = result.clone();
                         }
                     };
                 };
