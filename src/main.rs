@@ -15,17 +15,17 @@ impl Solver {
         let columns: [[bool; 10]; 9] = [[true; 10]; 9];
         let boxes: [[bool; 10]; 27] = [[true; 10]; 27];
         let mut to_explore: Vec<usize> = Vec::new();
-        for i in 0..81 {
-            if { sudoku[i] == 0 } {
+        for (i, item) in sudoku.iter().enumerate() {
+            if *item == 0 {
                 to_explore.push(i);
             }
         }
         let mut solver = Solver {
-            rows: rows,
-            columns: columns,
-            boxes: boxes,
+            rows,
+            columns,
+            boxes,
             data: sudoku,
-            to_explore: to_explore,
+            to_explore,
         };
         for i in 0..81 {
             solver.generate(i);
@@ -64,14 +64,14 @@ impl Solver {
                 let column = &self.columns[i % 9];
                 let cbox = &self.boxes[i / 27 * 3 + i / 3 % 3];
                 for x in 1..10 {
-                    if { row[x] && column[x] && cbox[x] } {
+                    if row[x] && column[x] && cbox[x] {
                         result.push(x as u8);
                         //if { result.len() >= min_length } {
                         //    break;
                         //}
                     }
                 }
-                if { result.len() < min_length } {
+                if result.len() < min_length {
                     match result.len() {
                         0 => return false,
                         1 => {
@@ -120,11 +120,11 @@ impl SolverManager {
     }
     #[inline(never)]
     pub fn next(&mut self) -> bool {
-        if { self.routes.len() > 0 } {
+        if !self.routes.is_empty() {
             let mut route = self.routes.pop().unwrap();
             let result = route.process(&mut self.routes);
-            if { result } {
-                self.solution = route.data.clone();
+            if result {
+                self.solution = route.data;
                 self.routes.clear();
             } else {
                 return false;
