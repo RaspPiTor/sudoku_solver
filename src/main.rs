@@ -1,34 +1,19 @@
 #![feature(vec_remove_item)]
-use std::collections::HashSet;
 
 #[derive(Clone)]
 struct Solver {
-    rows: Vec<HashSet<u8>>,
-    columns: Vec<HashSet<u8>>,
-    boxes: Vec<HashSet<u8>>,
-    options: HashSet<u8>,
+    rows: [[bool; 10]; 9],
+    columns: [[bool; 10]; 9],
+    boxes: [[bool; 10]; 27],
     data: [u8; 81],
     to_explore: Vec<usize>,
 }
 
 impl Solver {
     pub fn new(sudoku: [u8; 81]) -> Solver {
-        let mut options = HashSet::new();
-        for i in 1..10 {
-            options.insert(i);
-        }
-        let mut rows: Vec<HashSet<u8>> = Vec::new();
-        for _ in 0..9 {
-            rows.push(options.clone());
-        }
-        let mut columns: Vec<HashSet<u8>> = Vec::new();
-        for _ in 0..9 {
-            columns.push(options.clone());
-        }
-        let mut boxes: Vec<HashSet<u8>> = Vec::new();
-        for _ in 0..27 {
-            boxes.push(options.clone());
-        }
+        let rows: [[bool; 10]; 9] = [[true; 10]; 9];
+        let columns: [[bool; 10]; 9] = [[true; 10]; 9];
+        let boxes: [[bool; 10]; 27] = [[true; 10]; 27];
         let mut to_explore: Vec<usize> = Vec::new();
         for i in 0..81 {
             if { sudoku[i] == 0 } {
@@ -39,7 +24,6 @@ impl Solver {
             rows: rows,
             columns: columns,
             boxes: boxes,
-            options: options,
             data: sudoku,
             to_explore: to_explore,
         };
@@ -52,17 +36,17 @@ impl Solver {
         let row_pos: usize = square / 9;
         let column_pos: usize = square % 9;
         let box_pos: usize = square / 27 * 3 + square / 3 % 3;
-        let mut row: HashSet<u8> = HashSet::with_capacity(9);
+        let mut row: [bool; 10] = [true; 10];
         for i in 0..9 {
-            row.insert(self.data[row_pos * 9 + i]);
+            row[self.data[row_pos * 9 + i] as usize] = false;
         }
-        let mut column: HashSet<u8> = HashSet::with_capacity(9);
+        let mut column: [bool; 10] = [true; 10];
         for i in &[0, 9, 18, 27, 36, 45, 54, 63, 72] {
-            column.insert(self.data[column_pos + *i]);
+            column[self.data[column_pos + *i] as usize] = false;
         }
-        let mut cbox: HashSet<u8> = HashSet::with_capacity(9);
+        let mut cbox: [bool; 10] = [true; 10];
         for i in &[0, 1, 2, 9, 10, 11, 18, 19, 20] {
-            cbox.insert(self.data[box_pos / 3 * 27 + box_pos % 3 * 3 + *i]);
+            cbox[self.data[box_pos / 3 * 27 + box_pos % 3 * 3 + *i] as usize] = false;
         }
         self.rows[row_pos] = row;
         self.columns[column_pos] = column;
@@ -75,13 +59,16 @@ impl Solver {
             let mut min_pos = 0;
             let mut min_result: Vec<u8> = Vec::new();
             for i in self.to_explore.iter() {
-                let mut result: HashSet<u8> = HashSet::new();
+                let mut result: Vec<u8> = Vec::with_capacity(9);
                 let row = &self.rows[i / 9];
                 let column = &self.columns[i % 9];
                 let cbox = &self.boxes[i / 27 * 3 + i / 3 % 3];
                 for x in 1..10 {
-                    if { !(row.contains(&x) || column.contains(&x) || cbox.contains(&x)) } {
-                        result.insert(x);
+                    if { row[x] && column[x] && cbox[x] } {
+                        result.push(x as u8);
+                        //if { result.len() >= min_length } {
+                        //    break;
+                        //}
                     }
                 }
                 if { result.len() < min_length } {
@@ -90,9 +77,7 @@ impl Solver {
                         1 => {
                             min_pos = *i;
                             min_result.clear();
-                            for x in result {
-                                min_result.push(x);
-                            }
+                            min_result = result;
                             break;
                         }
                         _ => {
@@ -151,9 +136,9 @@ impl SolverManager {
 
 fn main() {
     let sudoku: [u8; 81] = [
-        0, 5, 0, 4, 0, 0, 9, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 5, 9, 0, 0, 0, 0, 7, 6, 3, 0, 0, 7, 5,
-        0, 0, 0, 0, 0, 4, 4, 1, 0, 0, 0, 0, 7, 9, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 9, 0, 0,
-        2, 7, 1, 7, 0, 0, 0, 0, 5, 4, 0, 6, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+        8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 6, 0, 0, 0, 0, 0, 0, 7, 0, 0, 9, 0, 2, 0, 0, 0, 5, 0,
+        0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 4, 5, 7, 0, 0, 0, 0, 0, 1, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0,
+        0, 6, 8, 0, 0, 8, 5, 0, 0, 0, 1, 0, 0, 9, 0, 0, 0, 0, 4, 0, 0,
     ];
     let mut s = SolverManager::new(sudoku);
     while { !s.next() } {}
