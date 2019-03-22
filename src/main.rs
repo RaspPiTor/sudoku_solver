@@ -1,4 +1,60 @@
-#![feature(vec_remove_item)]
+#![feature(vec_remove_item, test)]
+
+extern crate test;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use test::Bencher;
+
+    #[test]
+    fn worlds_hardest_test() {
+        let sudoku: [u8; 81] = [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 8, 5, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0,
+            0, 5, 0, 7, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0,
+            0, 0, 0, 7, 3, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 9,
+        ];
+        let mut s = SolverManager::new(sudoku);
+        while { !s.next() } {}
+        let mut v: Vec<u8> = Vec::new();
+        for i in s.solution.iter() {
+            v.push(*i);
+        }
+        let solution: Vec<u8> = vec![
+            9, 8, 7, 6, 5, 4, 3, 2, 1, 2, 4, 6, 1, 7, 3, 9, 8, 5, 3, 5, 1, 9, 2, 8, 7, 4, 6, 1, 2,
+            8, 5, 3, 7, 6, 9, 4, 6, 3, 4, 8, 9, 2, 1, 5, 7, 7, 9, 5, 4, 6, 1, 8, 3, 2, 5, 1, 9, 2,
+            8, 6, 4, 7, 3, 4, 7, 2, 3, 1, 9, 5, 6, 8, 8, 6, 3, 7, 4, 5, 2, 1, 9,
+        ];
+        assert_eq!(v, solution);
+    }
+
+    #[bench]
+    fn worlds_hardest_bench(b: &mut Bencher) {
+        let sudoku: [u8; 81] = test::black_box([
+            8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 6, 0, 0, 0, 0, 0, 0, 7, 0, 0, 9, 0, 2, 0, 0, 0, 5,
+            0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 4, 5, 7, 0, 0, 0, 0, 0, 1, 0, 0, 0, 3, 0, 0, 0, 1, 0,
+            0, 0, 0, 6, 8, 0, 0, 8, 5, 0, 0, 0, 1, 0, 0, 9, 0, 0, 0, 0, 4, 0, 0,
+        ]);
+        b.iter(|| {
+            let mut s = SolverManager::new(sudoku);
+            while { !s.next() } {}
+            test::black_box(&s);
+        });
+    }
+    #[bench]
+    fn hardbrute_bench(b: &mut Bencher) {
+        let sudoku: [u8; 81] = test::black_box([
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 8, 5, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0,
+            0, 5, 0, 7, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0,
+            0, 0, 0, 7, 3, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 9,
+        ]);
+        b.iter(|| {
+            let mut s = SolverManager::new(sudoku);
+            while { !s.next() } {}
+            test::black_box(&s);
+        });
+    }
+}
 
 #[derive(Clone)]
 struct Solver {
