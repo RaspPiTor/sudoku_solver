@@ -1,18 +1,19 @@
-#![feature(vec_remove_item)]
+use std::collections::HashSet;
+
 
 #[derive(Clone)]
 struct Solver {
     data: [u8; 81],
-    to_explore: Vec<usize>,
+    to_explore: HashSet<usize>,
     options: [[bool; 10]; 81],
 }
 
 impl Solver {
     fn new(sudoku: [u8; 81]) -> Solver {
-        let mut to_explore: Vec<usize> = Vec::new();
+        let mut to_explore: HashSet<usize> = HashSet::with_capacity(81);
         for (i, item) in sudoku.iter().enumerate() {
             if *item == 0 {
-                to_explore.push(i);
+                to_explore.insert(i);
             }
         }
         let mut solver = Solver {
@@ -29,9 +30,9 @@ impl Solver {
     }
     fn generate(&mut self, square: usize) {
         let value = self.data[square] as usize;
-        let mut valid = [false; 10];
-        valid[value] = true;
-        self.options[square] = valid;
+        //let mut valid = [false; 10];
+        //valid[value] = true;
+        //self.options[square] = valid;
         let row_start = square / 9 * 9;
         for i in 0..9 {
             let pos = i + row_start;
@@ -85,7 +86,7 @@ impl Solver {
                     };
                 };
             }
-            self.to_explore.remove_item(&min_pos);
+            self.to_explore.remove(&min_pos);
             values.clear();
             for i in 1..10 {
                 if min_result[i] {
