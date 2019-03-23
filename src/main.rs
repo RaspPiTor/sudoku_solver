@@ -228,10 +228,15 @@ fn main() {
         0, 6, 8, 0, 0, 8, 5, 0, 0, 0, 1, 0, 0, 9, 0, 0, 0, 0, 4, 0, 0,
     ];
     let mut s = SolverManager::new(sudoku);
-    while { !s.next() } {}
+
+    let mut counter = 0;
+    while { !s.next() } {
+        counter += 1;
+    }
     let mut v: Vec<u8> = Vec::new();
     for i in s.solution.iter() {
         v.push(*i);
     }
     println!("Solution:{:?}", v);
+    println!("Count:{:?}", counter);
 }
