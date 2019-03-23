@@ -205,7 +205,6 @@ impl SolverManager {
             solution: [0; 81],
         }
     }
-    #[inline(never)]
     pub fn next(&mut self) -> bool {
         if !self.routes.is_empty() {
             let mut route = self.routes.pop().unwrap();
