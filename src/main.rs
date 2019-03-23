@@ -48,6 +48,26 @@ mod tests {
         ];
         assert_eq!(v, solution);
     }
+    #[test]
+    fn random17_test() {
+        let sudoku: [u8; 81] = [
+            0, 0, 0, 7, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 0, 2, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 5, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 8, 0, 0, 0, 0,
+            8, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 5, 0, 0, 4, 0, 0, 0, 0, 3, 0, 0,
+        ];
+        let mut s = SolverManager::new(sudoku);
+        while { !s.next() } {}
+        let mut v: Vec<u8> = Vec::new();
+        for i in s.solution.iter() {
+            v.push(*i);
+        }
+        let solution: Vec<u8> = vec![
+            2, 6, 4, 7, 1, 5, 8, 3, 9, 1, 3, 7, 8, 9, 2, 6, 4, 5, 5, 9, 8, 4, 3, 6, 2, 7, 1, 4, 2,
+            3, 1, 7, 8, 5, 9, 6, 8, 1, 6, 5, 4, 9, 7, 2, 3, 7, 5, 9, 6, 2, 3, 4, 1, 8, 3, 7, 5, 2,
+            8, 1, 9, 6, 4, 9, 8, 2, 3, 6, 4, 1, 5, 7, 6, 4, 1, 9, 5, 7, 3, 8, 2,
+        ];
+        assert_eq!(v, solution);
+    }
 
     #[bench]
     fn worlds_hardest_bench(b: &mut Bencher) {
@@ -91,6 +111,19 @@ mod tests {
     #[bench]
     fn bench_empty(b: &mut Bencher) {
         let sudoku: [u8; 81] = test::black_box([0; 81]);
+        b.iter(|| {
+            let mut s = SolverManager::new(sudoku);
+            while { !s.next() } {}
+            test::black_box(&s);
+        });
+    }
+    #[bench]
+    fn bench_random17(b: &mut Bencher) {
+        let sudoku: [u8; 81] = test::black_box([
+            0, 0, 0, 7, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 0, 2, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 5, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 8, 0, 0, 0, 0,
+            8, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 5, 0, 0, 4, 0, 0, 0, 0, 3, 0, 0,
+        ]);
         b.iter(|| {
             let mut s = SolverManager::new(sudoku);
             while { !s.next() } {}
