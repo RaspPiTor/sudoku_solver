@@ -107,29 +107,14 @@ impl Solver {
     }
 }
 
-pub struct SolverManager {
-    routes: Vec<Solver>,
-    pub solution: [u8; 81],
-}
-
-impl SolverManager {
-    pub fn new(sudoku: [u8; 81]) -> SolverManager {
-        SolverManager {
-            routes: vec![Solver::new(sudoku)],
-            solution: [0; 81],
+pub fn solve(sudoku: [u8; 81]) -> [u8; 81] {
+    let mut routes: Vec<Solver> = vec![Solver::new(sudoku)];
+    while !routes.is_empty() {
+        let mut route = routes.pop().unwrap();
+        let result = route.process(&mut routes);
+        if result {
+            return route.data;
         }
     }
-    pub fn next(&mut self) -> bool {
-        if !self.routes.is_empty() {
-            let mut route = self.routes.pop().unwrap();
-            let result = route.process(&mut self.routes);
-            if result {
-                self.solution = route.data;
-                self.routes.clear();
-            } else {
-                return false;
-            };
-        }
-        true
-    }
+    panic!("Empty routes, but still unsolved");
 }

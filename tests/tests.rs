@@ -14,10 +14,9 @@ mod tests {
             0, 5, 0, 7, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0,
             0, 0, 0, 7, 3, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 9,
         ];
-        let mut s = sudoku_solver::SolverManager::new(sudoku);
-        while { !s.next() } {}
-        let mut v: Vec<u8> = Vec::new();
-        for i in s.solution.iter() {
+        let result: [u8; 81] = sudoku_solver::solve(sudoku);
+        let mut v: Vec<u8> = Vec::with_capacity(81);
+        for i in result.iter() {
             v.push(*i);
         }
         let solution: Vec<u8> = vec![
@@ -35,10 +34,9 @@ mod tests {
             0, 5, 0, 7, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0,
             0, 0, 0, 7, 3, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 9,
         ];
-        let mut s = sudoku_solver::SolverManager::new(sudoku);
-        while { !s.next() } {}
-        let mut v: Vec<u8> = Vec::new();
-        for i in s.solution.iter() {
+        let result: [u8; 81] = sudoku_solver::solve(sudoku);
+        let mut v: Vec<u8> = Vec::with_capacity(81);
+        for i in result.iter() {
             v.push(*i);
         }
         let solution: Vec<u8> = vec![
@@ -55,10 +53,9 @@ mod tests {
             0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 5, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 8, 0, 0, 0, 0,
             8, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 5, 0, 0, 4, 0, 0, 0, 0, 3, 0, 0,
         ];
-        let mut s = sudoku_solver::SolverManager::new(sudoku);
-        while { !s.next() } {}
-        let mut v: Vec<u8> = Vec::new();
-        for i in s.solution.iter() {
+        let result: [u8; 81] = sudoku_solver::solve(sudoku);
+        let mut v: Vec<u8> = Vec::with_capacity(81);
+        for i in result.iter() {
             v.push(*i);
         }
         let solution: Vec<u8> = vec![
