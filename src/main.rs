@@ -117,38 +117,16 @@ impl Solver {
             data: sudoku,
             to_explore,
         };
-        for i in 0..9 {
-            solver.generate_row(i);
-            solver.generate_column(i);
-            solver.generate_box(i);
+        for i in 0..81 {
+            solver.generate(i);
         }
         solver
     }
     fn generate(&mut self, square: usize) {
-        self.generate_row(square / 9);
-        self.generate_column(square % 9);
-        self.generate_box(square / 27 * 3 + square / 3 % 3);
-    }
-    fn generate_row(&mut self, row_pos: usize) {
-        let mut row: [bool; 10] = [true; 10];
-        for i in 0..9 {
-            row[self.data[row_pos * 9 + i] as usize] = false;
-        }
-        self.rows[row_pos] = row;
-    }
-    fn generate_column(&mut self, column_pos: usize) {
-        let mut column: [bool; 10] = [true; 10];
-        for i in &[0, 9, 18, 27, 36, 45, 54, 63, 72] {
-            column[self.data[column_pos + *i] as usize] = false;
-        }
-        self.columns[column_pos] = column;
-    }
-    fn generate_box(&mut self, box_pos: usize) {
-        let mut cbox: [bool; 10] = [true; 10];
-        for i in &[0, 1, 2, 9, 10, 11, 18, 19, 20] {
-            cbox[self.data[box_pos / 3 * 27 + box_pos % 3 * 3 + *i] as usize] = false;
-        }
-        self.boxes[box_pos] = cbox;
+        let value = self.data[square] as usize;
+        self.rows[square / 9][value] = false;
+        self.columns[square % 9][value] = false;
+        self.boxes[square / 27 * 3 + square / 3 % 3][value] = false;
     }
     #[inline(never)]
     fn process(&mut self, routes: &mut Vec<Solver>) -> bool {
@@ -189,9 +167,10 @@ impl Solver {
             self.to_explore.remove_item(&min_pos);
             let item = min_result.pop().unwrap();
             for value in min_result.iter() {
-                self.data[min_pos] = *value;
-                self.generate(min_pos);
-                routes.push(self.clone());
+                let mut clone = self.clone();
+                clone.data[min_pos] = *value;
+                clone.generate(min_pos);
+                routes.push(clone);
             }
             self.data[min_pos] = item;
             self.generate(min_pos);
