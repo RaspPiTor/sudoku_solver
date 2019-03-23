@@ -101,18 +101,13 @@ mod tests {
 
 #[derive(Clone)]
 struct Solver {
-    rows: [[bool; 10]; 9],
-    columns: [[bool; 10]; 9],
-    boxes: [[bool; 10]; 27],
     data: [u8; 81],
     to_explore: Vec<usize>,
+    options: [[bool; 10]; 81],
 }
 
 impl Solver {
     pub fn new(sudoku: [u8; 81]) -> Solver {
-        let rows: [[bool; 10]; 9] = [[true; 10]; 9];
-        let columns: [[bool; 10]; 9] = [[true; 10]; 9];
-        let boxes: [[bool; 10]; 27] = [[true; 10]; 27];
         let mut to_explore: Vec<usize> = Vec::new();
         for (i, item) in sudoku.iter().enumerate() {
             if *item == 0 {
@@ -120,45 +115,61 @@ impl Solver {
             }
         }
         let mut solver = Solver {
-            rows,
-            columns,
-            boxes,
             data: sudoku,
             to_explore,
+            options: [[true; 10]; 81],
         };
         for i in 0..81 {
-            solver.generate(i);
+            if sudoku[i] != 0 {
+                solver.generate(i);
+            }
         }
         solver
     }
     fn generate(&mut self, square: usize) {
         let value = self.data[square] as usize;
-        self.rows[square / 9][value] = false;
-        self.columns[square % 9][value] = false;
-        self.boxes[square / 27 * 3 + square / 3 % 3][value] = false;
+        let mut valid = [false; 10];
+        valid[value] = true;
+        self.options[square] = valid;
+        let row_start = square / 9 * 9;
+        for i in 0..9 {
+            let pos = i + row_start;
+            if pos != square {
+                self.options[pos][value] = false;
+            }
+        }
+        let column_start = square % 9;
+        for i in 0..9 {
+            let pos = column_start + 9 * i;
+            if pos != square {
+                self.options[pos][value] = false;
+            }
+        }
+        let box_start = square / 27 * 27 + square / 3 % 3 * 3;
+        for i in &[0, 1, 2, 9, 10, 11, 18, 19, 20] {
+            let pos = box_start + *i;
+            if pos != square {
+                self.options[pos][value] = false;
+            }
+        }
     }
     #[inline(never)]
     fn process(&mut self, routes: &mut Vec<Solver>) -> bool {
-        let mut result: Vec<u8> = Vec::with_capacity(9);
+        let mut values: Vec<u8> = Vec::with_capacity(9);
         for _ in 0..self.to_explore.len() {
-            let mut min_length = 11;
+            let mut min_length = 20;
             let mut min_pos = 0;
-            let mut min_result: Vec<u8> = Vec::new();
+            let mut min_result: [bool; 10] = [true; 10];
             for i in self.to_explore.iter() {
-                result.clear();
-                let row = &self.rows[i / 9];
-                let column = &self.columns[i % 9];
-                let cbox = &self.boxes[i / 27 * 3 + i / 3 % 3];
+                let result = self.options[*i];
+                let mut length: u8 = 0;
                 for x in 1..10 {
-                    if row[x] && column[x] && cbox[x] {
-                        result.push(x as u8);
-                        if result.len() >= min_length {
-                            break;
-                        }
+                    if result[x] {
+                        length += 1;
                     }
                 }
-                if result.len() < min_length {
-                    match result.len() {
+                if length < min_length {
+                    match length {
                         0 => return false,
                         1 => {
                             min_pos = *i;
@@ -166,7 +177,7 @@ impl Solver {
                             break;
                         }
                         _ => {
-                            min_length = result.len();
+                            min_length = length;
                             min_pos = *i;
                             min_result = result.clone();
                         }
@@ -174,8 +185,14 @@ impl Solver {
                 };
             }
             self.to_explore.remove_item(&min_pos);
-            let item = min_result.pop().unwrap();
-            for value in min_result.iter() {
+            values.clear();
+            for i in 1..10 {
+                if min_result[i] {
+                    values.push(i as u8);
+                }
+            }
+            let item = values.pop().unwrap();
+            for value in values.iter() {
                 let mut clone = self.clone();
                 clone.data[min_pos] = *value;
                 clone.generate(min_pos);
