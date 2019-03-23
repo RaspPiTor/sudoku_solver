@@ -88,6 +88,15 @@ mod tests {
             test::black_box(&s);
         });
     }
+    #[bench]
+    fn bench_empty(b: &mut Bencher) {
+        let sudoku: [u8; 81] = test::black_box([0; 81]);
+        b.iter(|| {
+            let mut s = SolverManager::new(sudoku);
+            while { !s.next() } {}
+            test::black_box(&s);
+        });
+    }
 }
 
 #[derive(Clone)]
