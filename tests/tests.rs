@@ -1,4 +1,4 @@
-#![feature(vec_remove_item, test)]
+#![feature(test)]
 
 extern crate test;
 use sudoku_solver;
