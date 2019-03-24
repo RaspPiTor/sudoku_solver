@@ -16,6 +16,7 @@ impl Solver {
                 to_explore.insert(i);
             }
         }
+        to_explore.shrink_to_fit();
         let mut solver = Solver {
             data: sudoku,
             to_explore,
