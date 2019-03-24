@@ -10,13 +10,12 @@ struct Solver {
 
 impl Solver {
     fn new(sudoku: [u8; 81]) -> Solver {
-        let mut to_explore: HashSet<usize> = HashSet::with_capacity(81);
+        let mut to_explore: HashSet<usize> = HashSet::with_capacity(64);
         for (i, item) in sudoku.iter().enumerate() {
             if *item == 0 {
                 to_explore.insert(i);
             }
         }
-        to_explore.shrink_to_fit();
         let mut solver = Solver {
             data: sudoku,
             to_explore,
