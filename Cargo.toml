@@ -5,3 +5,10 @@ authors = ["Alex Williams <hughaw64@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+
+
+[profile.release]
+opt-level = 3
+lto = true
+incremental = false
+debug = true
