@@ -65,7 +65,7 @@ impl Solver {
             for i in self.to_explore.iter() {
                 let result = self.options[*i];
                 let mut length: u8 = 0;
-                for item in result.iter().skip(1) {
+                for item in &result[1..] {
                     if *item {
                         length += 1;
                     }
