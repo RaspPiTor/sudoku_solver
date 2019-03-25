@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 
-
 #[derive(Clone)]
 struct Solver {
     data: [u8; 81],
@@ -58,10 +57,12 @@ impl Solver {
     #[inline(never)]
     fn process(&mut self, routes: &mut Vec<Solver>) -> bool {
         let mut values: Vec<u8> = Vec::with_capacity(9);
-        for _ in 0..self.to_explore.len() {
+        let mut one_vec: Vec<(usize, u8)> = Vec::with_capacity(20);
+        while !self.to_explore.is_empty() {
             let mut min_length = 20;
             let mut min_pos = 0;
             let mut min_result: [bool; 10] = [true; 10];
+            one_vec.clear();
             for i in self.to_explore.iter() {
                 let result = self.options[*i];
                 let mut length: u8 = 0;
@@ -74,9 +75,12 @@ impl Solver {
                     match length {
                         0 => return false,
                         1 => {
-                            min_pos = *i;
-                            min_result = result;
-                            break;
+                            for (x, item) in result.iter().enumerate().skip(1) {
+                                if *item {
+                                    one_vec.push((*i, x as u8));
+                                    break;
+                                }
+                            }
                         }
                         _ => {
                             min_length = length;
@@ -86,22 +90,35 @@ impl Solver {
                     };
                 };
             }
-            self.to_explore.remove(&min_pos);
+
             values.clear();
-            for (i, item) in min_result.iter().enumerate().skip(1) {
-                if *item {
-                    values.push(i as u8);
+            if !one_vec.is_empty() {
+                for (pos, value) in &one_vec {
+                    if self.options[*pos][*value as usize] {
+                        self.data[*pos] = *value;
+                        self.generate(*pos);
+                        self.to_explore.remove(pos);
+                    } else {
+                        return false;
+                    }
                 }
+            } else {
+                self.to_explore.remove(&min_pos);
+                for (i, item) in min_result.iter().enumerate().skip(1) {
+                    if *item {
+                        values.push(i as u8);
+                    }
+                }
+                let item = values.pop().unwrap();
+                for value in values.iter() {
+                    let mut clone = self.clone();
+                    clone.data[min_pos] = *value;
+                    clone.generate(min_pos);
+                    routes.push(clone);
+                }
+                self.data[min_pos] = item;
+                self.generate(min_pos);
             }
-            let item = values.pop().unwrap();
-            for value in values.iter() {
-                let mut clone = self.clone();
-                clone.data[min_pos] = *value;
-                clone.generate(min_pos);
-                routes.push(clone);
-            }
-            self.data[min_pos] = item;
-            self.generate(min_pos);
         }
 
         true
