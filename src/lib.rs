@@ -125,6 +125,7 @@ impl Solver {
 
 pub fn solve(sudoku: [u8; 81]) -> [u8; 81] {
     let mut routes: Vec<Solver> = vec![Solver::new(sudoku)];
+    routes.reserve(1024);
     while !routes.is_empty() {
         let mut route = routes.pop().unwrap();
         let result = route.process(&mut routes);
