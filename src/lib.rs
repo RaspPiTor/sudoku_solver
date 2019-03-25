@@ -21,8 +21,8 @@ impl Solver {
             to_explore,
             options: [[true; 10]; 81],
         };
-        for i in 0..81 {
-            if sudoku[i] != 0 {
+        for (i, item) in sudoku.iter().enumerate() {
+            if *item != 0 {
                 solver.generate(i);
             }
         }
@@ -65,8 +65,8 @@ impl Solver {
             for i in self.to_explore.iter() {
                 let result = self.options[*i];
                 let mut length: u8 = 0;
-                for x in 1..10 {
-                    if result[x] {
+                for item in result.iter().skip(1) {
+                    if *item {
                         length += 1;
                     }
                 }
@@ -75,21 +75,21 @@ impl Solver {
                         0 => return false,
                         1 => {
                             min_pos = *i;
-                            min_result = result.clone();
+                            min_result = result;
                             break;
                         }
                         _ => {
                             min_length = length;
                             min_pos = *i;
-                            min_result = result.clone();
+                            min_result = result;
                         }
                     };
                 };
             }
             self.to_explore.remove(&min_pos);
             values.clear();
-            for i in 1..10 {
-                if min_result[i] {
+            for (i, item) in min_result.iter().enumerate().skip(1) {
+                if *item {
                     values.push(i as u8);
                 }
             }
