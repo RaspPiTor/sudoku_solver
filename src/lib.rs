@@ -72,6 +72,7 @@ impl Solver {
                     match length {
                         0 => return false,
                         1 => {
+                            min_length = 2;
                             for (x, item) in result.iter().enumerate().skip(1) {
                                 if *item {
                                     one_vec.push((*i, x as u8));
