@@ -88,8 +88,6 @@ impl Solver {
                     };
                 };
             }
-
-            values.clear();
             if !one_vec.is_empty() {
                 for (pos, value) in &one_vec {
                     if self.options[*pos][*value as usize] {
@@ -101,6 +99,7 @@ impl Solver {
                     }
                 }
             } else {
+                values.clear();
                 self.to_explore.remove(&min_pos);
                 for (i, item) in min_result.iter().enumerate().skip(1) {
                     if *item {
