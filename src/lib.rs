@@ -33,24 +33,21 @@ impl Solver {
         //valid[value] = true;
         //self.options[square] = valid;
         let row_start = square / 9 * 9;
-        for i in 0..9 {
-            let pos = i + row_start;
-            if pos != square {
-                self.options[pos][value] = false;
-            }
-        }
         let column_start = square % 9;
-        for i in 0..9 {
-            let pos = column_start + 9 * i;
-            if pos != square {
-                self.options[pos][value] = false;
-            }
-        }
         let box_start = square / 27 * 27 + square / 3 % 3 * 3;
-        for i in &[0, 1, 2, 9, 10, 11, 18, 19, 20] {
-            let pos = box_start + *i;
-            if pos != square {
-                self.options[pos][value] = false;
+        let box_array: [usize; 9] = [0, 1, 2, 9, 10, 11, 18, 19, 20];
+        for i in 0..9 {
+            let row_pos = i + row_start;
+            let column_pos = column_start + 9 * i;
+            let box_pos = box_start + box_array[i];
+            if row_pos != square {
+                self.options[row_pos][value] = false;
+            }
+            if column_pos != square {
+                self.options[column_pos][value] = false;
+            }
+            if box_pos != square {
+                self.options[box_pos][value] = false;
             }
         }
     }
