@@ -23,7 +23,7 @@ impl SudokuEmpty {
 }
 const SUDOKU_VALUES: [u16; 9] = [1, 2, 4, 8, 16, 32, 64, 128, 256];
 const SUDOKU_MAX: u16 = 511;
-const SUDOKU_CACHE: [u8; SUDOKU_MAX as usize + 1] = [
+const OPTION_COUNT_CACHE: [u8; SUDOKU_MAX as usize + 1] = [
     0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
     1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
     1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
@@ -89,7 +89,7 @@ impl Solver {
             while x < self.to_explore.end {
                 let pos = self.to_explore.data[x] as usize;
                 let option = self.options[pos];
-                let length = SUDOKU_CACHE[option as usize];
+                let length = OPTION_COUNT_CACHE[option as usize];
                 if length < min_length {
                     match length {
                         0 => return false,
