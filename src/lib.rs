@@ -62,7 +62,7 @@ impl Solver {
         }
         solver
     }
-    fn generate(&mut self, square: usize, value: usize) -> bool {
+    fn generate(&mut self, square: usize, value: usize) -> bool{
         let processed_value = SUDOKU_VALUES[value - 1];
         let row_start = square / 9 * 9;
         let column_start = square % 9;
@@ -135,8 +135,11 @@ impl Solver {
                     if clone.generate(min_pos, *value as usize) {
                         routes.push(clone);
                     }
+
                 }
-                self.generate(min_pos, item as usize);
+                if !self.generate(min_pos, item as usize) {
+                    return false;
+                }
             } else {
                 return true;
             }
