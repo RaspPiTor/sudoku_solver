@@ -62,19 +62,26 @@ impl Solver {
         }
         solver
     }
-    fn generate(&mut self, square: usize, value: usize) {
+    fn generate(&mut self, square: usize, value: usize) -> bool {
         let processed_value = SUDOKU_VALUES[value - 1];
         let row_start = square / 9 * 9;
         let column_start = square % 9;
         let box_start = square / 27 * 27 + square / 3 % 3 * 3;
         let box_array: [usize; 9] = [0, 1, 2, 9, 10, 11, 18, 19, 20];
+        let mut row_total: u16 = processed_value;
+        let mut column_total: u16 = processed_value;
+        let mut box_total: u16 = processed_value;
         for i in 0..9 {
             self.options[i + row_start] &= SUDOKU_MAX - processed_value;
+            row_total |= self.options[i + row_start];
             self.options[column_start + 9 * i] &= SUDOKU_MAX - processed_value;
+            column_total |= self.options[column_start + 9 * i];
             self.options[box_start + box_array[i]] &= SUDOKU_MAX - processed_value;
+            box_total |= self.options[box_start + box_array[i]];
         }
         self.options[square] = processed_value;
         self.to_explore.remove(square as u8);
+        row_total == SUDOKU_MAX && column_total == SUDOKU_MAX && box_total == SUDOKU_MAX
     }
     #[inline(never)]
     fn process(&mut self, routes: &mut Vec<Solver>) -> bool {
@@ -93,7 +100,9 @@ impl Solver {
                         1 => {
                             for i in 0..9 {
                                 if option & SUDOKU_VALUES[i] > 0 {
-                                    self.generate(pos, i + 1);
+                                    if !self.generate(pos, i + 1) {
+                                        return false;
+                                    }
                                     break;
                                 }
                             }
@@ -123,8 +132,9 @@ impl Solver {
                 let item = values.pop().unwrap();
                 for value in values.iter() {
                     let mut clone = self.clone();
-                    clone.generate(min_pos, *value as usize);
-                    routes.push(clone);
+                    if clone.generate(min_pos, *value as usize) {
+                        routes.push(clone);
+                    }
                 }
                 self.generate(min_pos, item as usize);
             } else {
