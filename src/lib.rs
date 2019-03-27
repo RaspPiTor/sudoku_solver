@@ -69,12 +69,9 @@ impl Solver {
         let box_start = square / 27 * 27 + square / 3 % 3 * 3;
         let box_array: [usize; 9] = [0, 1, 2, 9, 10, 11, 18, 19, 20];
         for i in 0..9 {
-            let row_pos = i + row_start;
-            let column_pos = column_start + 9 * i;
-            let box_pos = box_start + box_array[i];
-            self.options[row_pos] &= SUDOKU_MAX - processed_value;
-            self.options[column_pos] &= SUDOKU_MAX - processed_value;
-            self.options[box_pos] &= SUDOKU_MAX - processed_value;
+            self.options[i + row_start] &= SUDOKU_MAX - processed_value;
+            self.options[column_start + 9 * i] &= SUDOKU_MAX - processed_value;
+            self.options[box_start + box_array[i]] &= SUDOKU_MAX - processed_value;
         }
         self.options[square] = processed_value;
         self.to_explore.remove(square as u8);
