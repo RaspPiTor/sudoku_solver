@@ -71,6 +71,7 @@ impl Solver {
         let mut row_total: u16 = processed_value;
         let mut column_total: u16 = processed_value;
         let mut box_total: u16 = processed_value;
+        self.options[square] = 0;
         for i in 0..9 {
             self.options[i + row_start] &= SUDOKU_MAX - processed_value;
             row_total |= self.options[i + row_start];
