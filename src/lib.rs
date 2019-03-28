@@ -517,7 +517,7 @@ impl Solver {
                         0 => return false,
                         1 => {
                             for i in 0..9 {
-                                if option & SUDOKU_VALUES[i] > 0 {
+                                if option == SUDOKU_VALUES[i] {
                                     if !self.generate(pos, i + 1) {
                                         return false;
                                     }
@@ -540,7 +540,7 @@ impl Solver {
                 values.clear();
                 let options = self.options[min_pos];
                 for i in 0..9 {
-                    if options & SUDOKU_VALUES[i] > 0 {
+                    if options & SUDOKU_VALUES[i] != 0 {
                         values.push(i as u8 + 1);
                     }
                 }
@@ -566,7 +566,7 @@ impl Solver {
         let mut solution: [u8; 81] = [0; 81];
         for (i, option) in self.options.iter().enumerate() {
             for x in 0..9 {
-                if option & SUDOKU_VALUES[x] > 0 {
+                if *option == SUDOKU_VALUES[x] {
                     solution[i] = x as u8 + 1;
                     break;
                 }
