@@ -35,6 +35,7 @@ fn main() {
         for i in 0..81 {
             let value = match line.chars().nth(i) {
                 Some(v) => match v {
+                    '.' => 0,
                     '0' => 0,
                     '1' => 1,
                     '2' => 2,
