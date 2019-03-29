@@ -32,7 +32,7 @@ fn main() {
             continue;
         }
         let mut sudoku: [u8; 81] = [0; 81];
-        for i in 0..81 {
+        for (i, square) in sudoku.iter_mut().enumerate() {
             let value = match line.chars().nth(i) {
                 Some(v) => match v {
                     '.' => 0,
@@ -56,7 +56,7 @@ fn main() {
                     break;
                 }
             };
-            sudoku[i] = value;
+            *square = value;
         }
         sudokus.push(sudoku);
     }

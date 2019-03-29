@@ -436,8 +436,8 @@ struct SudokuEmpty {
 impl SudokuEmpty {
     fn new() -> SudokuEmpty {
         let mut data: [u8; 81] = [0; 81];
-        for i in 0..81 {
-            data[i] = i as u8;
+        for (i, data_i) in data.iter_mut().enumerate(){
+            *data_i = i as u8;
         }
         SudokuEmpty { data, end: 81 }
     }
@@ -516,8 +516,8 @@ impl Solver {
                     match length {
                         0 => return false,
                         1 => {
-                            for i in 0..9 {
-                                if option == SUDOKU_VALUES[i] {
+                            for (i, item) in SUDOKU_VALUES.iter().enumerate() {
+                                if option == *item {
                                     if !self.generate(pos, i + 1) {
                                         return false;
                                     }
@@ -539,8 +539,8 @@ impl Solver {
             if min_length != 20 {
                 values.clear();
                 let options = self.options[min_pos];
-                for i in 0..9 {
-                    if options & SUDOKU_VALUES[i] != 0 {
+                for (i, item) in SUDOKU_VALUES.iter().enumerate() {
+                    if options & *item != 0 {
                         values.push(i as u8 + 1);
                     }
                 }
@@ -565,8 +565,8 @@ impl Solver {
     fn get_result(&self) -> [u8; 81] {
         let mut solution: [u8; 81] = [0; 81];
         for (i, option) in self.options.iter().enumerate() {
-            for x in 0..9 {
-                if *option == SUDOKU_VALUES[x] {
+            for (x, value) in SUDOKU_VALUES.iter().enumerate() {
+                if option == value {
                     solution[i] = x as u8 + 1;
                     break;
                 }
