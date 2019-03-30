@@ -470,6 +470,64 @@ impl Solver {
         }
         solver
     }
+
+    fn hidden_singles(&mut self, square: usize) -> bool {
+        let processed_value = self.options[square];
+        let (rows, columns, boxes) = PRECOMPUTED_INDEXES[square];
+        let mut row_total: u16 = 0;
+        for row in rows.iter() {
+            row_total |= self.options[*row as usize];
+        }
+        match OPTION_COUNT_CACHE[(SUDOKU_MAX - row_total) as usize] {
+            0 => {}
+            1 => {
+                if self.options[square] & (SUDOKU_MAX - row_total) != 0 {
+                    self.options[square] &= SUDOKU_MAX - row_total;
+                } else {
+                    return false;
+                }
+            }
+            _ => {
+                return false;
+            }
+        }
+        let mut column_total: u16 = 0;
+        for column in columns.iter() {
+            column_total |= self.options[*column as usize];
+        }
+        match OPTION_COUNT_CACHE[(SUDOKU_MAX - column_total) as usize] {
+            0 => {}
+            1 => {
+                if self.options[square] & (SUDOKU_MAX - column_total) != 0 {
+                    self.options[square] &= SUDOKU_MAX - column_total;
+                } else {
+                    return false;
+                }
+            }
+            _ => {
+                return false;
+            }
+        }
+        let mut box_total: u16 = processed_value;
+        for cbox in boxes.iter() {
+            box_total |= self.options[*cbox as usize];
+        }
+        match OPTION_COUNT_CACHE[(SUDOKU_MAX - box_total) as usize] {
+            0 => {}
+            1 => {
+                if self.options[square] & (SUDOKU_MAX - box_total) != 0 {
+                    self.options[square] &= SUDOKU_MAX - box_total;
+                } else {
+                    return false;
+                }
+            }
+            _ => {
+                return false;
+            }
+        }
+        true
+    }
+
     fn generate(&mut self, square: usize, value: usize) -> bool {
         let processed_value = SUDOKU_VALUES[value - 1];
         let (rows, columns, boxes) = PRECOMPUTED_INDEXES[square];
@@ -510,6 +568,9 @@ impl Solver {
             let mut x: usize = 0;
             while x < self.to_explore.end {
                 let pos = self.to_explore.data[x] as usize;
+                if !self.hidden_singles(pos) {
+                    return false;
+                }
                 let option = self.options[pos];
                 let length = OPTION_COUNT_CACHE[option as usize];
                 if length < min_length {
