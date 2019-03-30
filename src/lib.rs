@@ -586,6 +586,9 @@ impl Solver {
                                 }
                             }
                             x = 0;
+                            if min_pos > pos {
+                                min_pos -= 1;
+                            }
                         }
                         _ => {
                             min_length = length;
