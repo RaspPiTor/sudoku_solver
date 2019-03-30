@@ -531,29 +531,14 @@ impl Solver {
     fn generate(&mut self, square: usize, value: usize) -> bool {
         let processed_value = SUDOKU_VALUES[value - 1];
         let (rows, columns, boxes) = PRECOMPUTED_INDEXES[square];
-        let mut row_total: u16 = processed_value;
         for row in rows.iter() {
             self.options[*row as usize] &= SUDOKU_MAX - processed_value;
-            row_total |= self.options[*row as usize];
         }
-        if row_total != SUDOKU_MAX {
-            return false;
-        }
-        let mut column_total: u16 = processed_value;
         for column in columns.iter() {
             self.options[*column as usize] &= SUDOKU_MAX - processed_value;
-            column_total |= self.options[*column as usize];
         }
-        if column_total != SUDOKU_MAX {
-            return false;
-        }
-        let mut box_total: u16 = processed_value;
         for cbox in boxes.iter() {
             self.options[*cbox as usize] &= SUDOKU_MAX - processed_value;
-            box_total |= self.options[*cbox as usize];
-        }
-        if box_total != SUDOKU_MAX {
-            return false;
         }
         self.options[square] = processed_value;
         self.to_explore.remove(square as u8);
