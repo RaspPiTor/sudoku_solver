@@ -472,7 +472,7 @@ impl Solver {
     }
 
     fn hidden_singles(&mut self, square: usize) -> bool {
-        let processed_value = self.options[square];
+        let mut processed_value = self.options[square];
         let (rows, columns, boxes) = PRECOMPUTED_INDEXES[square];
         let mut row_total: u16 = 0;
         for row in rows.iter() {
@@ -481,8 +481,8 @@ impl Solver {
         match OPTION_COUNT_CACHE[(SUDOKU_MAX - row_total) as usize] {
             0 => {}
             1 => {
-                if self.options[square] & (SUDOKU_MAX - row_total) != 0 {
-                    self.options[square] &= SUDOKU_MAX - row_total;
+                if processed_value & (SUDOKU_MAX - row_total) != 0 {
+                    processed_value &= SUDOKU_MAX - row_total;
                 } else {
                     return false;
                 }
@@ -498,8 +498,8 @@ impl Solver {
         match OPTION_COUNT_CACHE[(SUDOKU_MAX - column_total) as usize] {
             0 => {}
             1 => {
-                if self.options[square] & (SUDOKU_MAX - column_total) != 0 {
-                    self.options[square] &= SUDOKU_MAX - column_total;
+                if processed_value & (SUDOKU_MAX - column_total) != 0 {
+                    processed_value &= SUDOKU_MAX - column_total;
                 } else {
                     return false;
                 }
@@ -508,15 +508,15 @@ impl Solver {
                 return false;
             }
         }
-        let mut box_total: u16 = processed_value;
+        let mut box_total: u16 = 0;
         for cbox in boxes.iter() {
             box_total |= self.options[*cbox as usize];
         }
         match OPTION_COUNT_CACHE[(SUDOKU_MAX - box_total) as usize] {
             0 => {}
             1 => {
-                if self.options[square] & (SUDOKU_MAX - box_total) != 0 {
-                    self.options[square] &= SUDOKU_MAX - box_total;
+                if processed_value & (SUDOKU_MAX - box_total) != 0 {
+                    processed_value &= SUDOKU_MAX - box_total;
                 } else {
                     return false;
                 }
@@ -525,6 +525,7 @@ impl Solver {
                 return false;
             }
         }
+        self.options[square] = processed_value;
         true
     }
 
