@@ -436,7 +436,7 @@ struct SudokuEmpty {
 impl SudokuEmpty {
     fn new() -> SudokuEmpty {
         let mut data: [u8; 81] = [0; 81];
-        for (i, data_i) in data.iter_mut().enumerate(){
+        for (i, data_i) in data.iter_mut().enumerate() {
             *data_i = i as u8;
         }
         SudokuEmpty { data, end: 81 }
