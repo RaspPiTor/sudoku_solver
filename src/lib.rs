@@ -1,5 +1,3 @@
-#![feature(copy_within)]
-
 const PRECOMPUTED_INDEXES: [([u8; 8], [u8; 8], [u8; 8]); 81] = [
     (
         [1, 2, 3, 4, 5, 6, 7, 8],
@@ -444,8 +442,10 @@ impl SudokuEmpty {
     #[inline(never)]
     fn remove(&mut self, square: u8) {
         if let Ok(pos) = self.data[..self.end].binary_search(&square) {
-            self.data.copy_within(pos + 1..self.end, pos);
             self.end -= 1;
+            for i in pos..self.end {
+                self.data[i] = self.data[i + 1];
+            }
         }
     }
 }
