@@ -474,19 +474,19 @@ impl Solver {
     fn hidden_singles(&mut self, square: usize) -> bool {
         let mut processed_value = self.options[square];
         let (rows, columns, boxes) = PRECOMPUTED_INDEXES[square];
-        let row_total: u16 = self.options[rows[7] as usize]
+        let row_total: u16 = SUDOKU_MAX - (self.options[rows[7] as usize]
             | self.options[rows[6] as usize]
             | self.options[rows[5] as usize]
             | self.options[rows[4] as usize]
             | self.options[rows[3] as usize]
             | self.options[rows[2] as usize]
             | self.options[rows[1] as usize]
-            | self.options[rows[0] as usize];
-        match OPTION_COUNT_CACHE[(SUDOKU_MAX - row_total) as usize] {
+            | self.options[rows[0] as usize]);
+        match OPTION_COUNT_CACHE[row_total as usize] {
             0 => {}
             1 => {
-                if processed_value & (SUDOKU_MAX - row_total) != 0 {
-                    processed_value &= SUDOKU_MAX - row_total;
+                if processed_value & row_total != 0 {
+                    processed_value &= row_total;
                 } else {
                     return false;
                 }
@@ -495,19 +495,19 @@ impl Solver {
                 return false;
             }
         }
-        let column_total: u16 = self.options[columns[7] as usize]
+        let column_total: u16 = SUDOKU_MAX  - (self.options[columns[7] as usize]
             | self.options[columns[6] as usize]
             | self.options[columns[5] as usize]
             | self.options[columns[4] as usize]
             | self.options[columns[3] as usize]
             | self.options[columns[2] as usize]
             | self.options[columns[1] as usize]
-            | self.options[columns[0] as usize];
-        match OPTION_COUNT_CACHE[(SUDOKU_MAX - column_total) as usize] {
+            | self.options[columns[0] as usize]);
+        match OPTION_COUNT_CACHE[column_total as usize] {
             0 => {}
             1 => {
-                if processed_value & (SUDOKU_MAX - column_total) != 0 {
-                    processed_value &= SUDOKU_MAX - column_total;
+                if processed_value & column_total != 0 {
+                    processed_value &= column_total;
                 } else {
                     return false;
                 }
@@ -516,19 +516,19 @@ impl Solver {
                 return false;
             }
         }
-        let box_total: u16 = self.options[boxes[7] as usize]
+        let box_total: u16 = SUDOKU_MAX - (self.options[boxes[7] as usize]
             | self.options[boxes[6] as usize]
             | self.options[boxes[5] as usize]
             | self.options[boxes[4] as usize]
             | self.options[boxes[3] as usize]
             | self.options[boxes[2] as usize]
             | self.options[boxes[1] as usize]
-            | self.options[boxes[0] as usize];
-        match OPTION_COUNT_CACHE[(SUDOKU_MAX - box_total) as usize] {
+            | self.options[boxes[0] as usize]);
+        match OPTION_COUNT_CACHE[box_total as usize] {
             0 => {}
             1 => {
-                if processed_value & (SUDOKU_MAX - box_total) != 0 {
-                    processed_value &= SUDOKU_MAX - box_total;
+                if processed_value & box_total != 0 {
+                    processed_value &= box_total;
                 } else {
                     return false;
                 }
