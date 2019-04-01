@@ -1,7 +1,7 @@
 extern crate clap;
-use std::io::Write;
 use clap::{App, Arg};
 use std::io::BufRead;
+use std::io::Write;
 
 use sudoku_solver;
 
@@ -13,7 +13,8 @@ fn main() {
                 .help("File containig sudoku's")
                 .required(true)
                 .index(1),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("OUTPUT")
                 .help("File containig sudoku's")
                 .required(true)
@@ -73,7 +74,7 @@ fn main() {
     for sudoku in &mut sudokus {
         *sudoku = sudoku_solver::solve(*sudoku);
     }
-    let mut result: String = String::with_capacity(82*sudokus.len());
+    let mut result: String = String::with_capacity(82 * sudokus.len());
     for sudoku in &sudokus {
         for char in sudoku.iter() {
             result.push_str(&char.to_string());
@@ -83,7 +84,7 @@ fn main() {
     match std::fs::File::create(matches.value_of("OUTPUT").unwrap()) {
         Ok(mut f) => match f.write_all(result.as_bytes()) {
             Ok(_) => println!("Written results"),
-            Err(_) => println!("Encountered Error writing results")
+            Err(_) => println!("Encountered Error writing results"),
         },
         Err(_) => println!("Error creating file"),
     }
