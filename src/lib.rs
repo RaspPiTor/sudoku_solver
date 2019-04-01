@@ -470,7 +470,7 @@ impl Solver {
         }
         solver
     }
-
+    #[inline(never)]
     fn hidden_singles(&mut self, square: usize) -> bool {
         let mut processed_value = self.options[square];
         let (rows, columns, boxes) = PRECOMPUTED_INDEXES[square];
