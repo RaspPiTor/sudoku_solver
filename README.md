@@ -15,8 +15,10 @@ It store the results in a file with them solved in the same order they were ente
 
 Requires cargo to be installed
 
-`git clone https://github.com/RaspPiTor/sudoku_solver
-cd sudoku_solver
-cargo build --release
-`
+`git clone https://github.com/RaspPiTor/sudoku_solver`
+
+`cd sudoku_solver`
+
+`cargo build --release`
+
 Compiled binary will either be at target/release/sudoku_solver for linux, or target/release/sudoku_solver.exe for windows
