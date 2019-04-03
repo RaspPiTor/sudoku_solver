@@ -22,70 +22,54 @@ fn main() {
         )
         .get_matches();
     println!("Using input file: {}", matches.value_of("INPUT").unwrap());
-    let file =
+    let file_in =
         std::fs::File::open(matches.value_of("INPUT").unwrap()).expect("Failed to open file");
-    let lines = std::io::BufReader::new(file).lines();
-    let mut sudokus: Vec<[u8; 81]> = Vec::new();
-    for line in lines {
-        let line = match line {
-            Ok(l) => l,
-            Err(_) => {
-                println!("Encountered error");
-                break;
-            }
-        };
-        if line.len() != 81 {
+    let file_out =
+        std::fs::File::create(matches.value_of("OUTPUT").unwrap()).expect("Failed to open file");
+    let mut buf = std::io::BufReader::new(file_in);
+    let mut output = std::io::BufWriter::new(file_out);
+    let mut result: [u8; 82] = [b'\n'; 82];
+    let mut sudoku_count: u32 = 0;
+    let mut line = String::with_capacity(81);
+    while buf.read_line(&mut line).unwrap() > 0 {
+        if line.len() != 82 && line.len() != 81 {
             println!("Wrong line length: {:?}", line);
+            line.clear();
             continue;
         }
         let mut sudoku: [u8; 81] = [0; 81];
-        for (i, square) in sudoku.iter_mut().enumerate() {
-            let value = match line.chars().nth(i) {
-                Some(v) => match v {
-                    ' ' => 0,
-                    '?' => 0,
-                    '.' => 0,
-                    '0' => 0,
-                    '1' => 1,
-                    '2' => 2,
-                    '3' => 3,
-                    '4' => 4,
-                    '5' => 5,
-                    '6' => 6,
-                    '7' => 7,
-                    '8' => 8,
-                    '9' => 9,
-                    v => {
-                        println!("Invalid char:{:?} in line: {:?}", v, line);
-                        break;
-                    }
-                },
-                None => {
-                    println!("Error");
+        for (square, char) in sudoku.iter_mut().zip(line.chars()) {
+            *square = match char {
+                ' ' => 0,
+                '?' => 0,
+                '.' => 0,
+                '0' => 0,
+                '1' => 1,
+                '2' => 2,
+                '3' => 3,
+                '4' => 4,
+                '5' => 5,
+                '6' => 6,
+                '7' => 7,
+                '8' => 8,
+                '9' => 9,
+                v => {
+                    println!("Invalid char:{:?} in line: {:?}", v, line);
+                    line.clear();
                     break;
                 }
             };
-            *square = value;
         }
-        sudokus.push(sudoku);
-    }
-    println!("Processed file");
-    println!("Found {:?} valid sudokus", sudokus.len());
-    for sudoku in &mut sudokus {
-        *sudoku = sudoku_solver::solve(*sudoku);
-    }
-    let mut result: String = String::with_capacity(82 * sudokus.len());
-    for sudoku in &sudokus {
-        for char in sudoku.iter() {
-            result.push_str(&char.to_string());
+        let out_sudoku = sudoku_solver::solve(sudoku);
+        for (r, s) in result.iter_mut().zip(out_sudoku.iter()) {
+            *r = [b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9'][*s as usize];
         }
-        result.push('\n');
+        match output.write(&result) {
+            Ok(_) => {}
+            Err(_) => println!("Encountered error when writing"),
+        };
+        sudoku_count += 1;
+        line.clear();
     }
-    match std::fs::File::create(matches.value_of("OUTPUT").unwrap()) {
-        Ok(mut f) => match f.write_all(result.as_bytes()) {
-            Ok(_) => println!("Written results"),
-            Err(_) => println!("Encountered Error writing results"),
-        },
-        Err(_) => println!("Error creating file"),
-    }
+    println!("Solved {:?} sudokus", sudoku_count);
 }
