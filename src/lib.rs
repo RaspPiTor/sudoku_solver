@@ -441,10 +441,11 @@ impl SudokuEmpty {
     }
     #[inline(never)]
     fn remove(&mut self, square: u8) {
+        assert!(self.end <= 81);
         if let Ok(pos) = self.data[..self.end].binary_search(&square) {
             self.end -= 1;
             for i in pos..self.end {
-                self.data[i] = self.data[i + 1];
+                unsafe { *self.data.get_unchecked_mut(i) = *self.data.get_unchecked(i + 1) };
             }
         }
     }
