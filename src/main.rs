@@ -1,9 +1,8 @@
 extern crate clap;
+extern crate msolve;
 use clap::{App, Arg};
 use std::io::BufRead;
 use std::io::Write;
-
-use sudoku_solver;
 
 fn main() {
     let matches = App::new("Sudoku Solver")
@@ -60,7 +59,7 @@ fn main() {
                 }
             };
         }
-        let out_sudoku = sudoku_solver::solve(sudoku);
+        let out_sudoku = msolve::solve(&sudoku);
         for (r, s) in result.iter_mut().zip(out_sudoku.iter()) {
             *r = [b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9'][*s as usize];
         }
