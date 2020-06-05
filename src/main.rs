@@ -29,6 +29,7 @@ fn main() {
     let mut output = std::io::BufWriter::new(file_out);
     let mut result: [u8; 82] = [b'\n'; 82];
     let mut sudoku_count: u32 = 0;
+    let solver = msolve::Solver::new();
     let mut line = String::with_capacity(81);
     while buf.read_line(&mut line).unwrap() > 0 {
         if line.len() != 82 && line.len() != 81 {
@@ -59,14 +60,15 @@ fn main() {
                 }
             };
         }
-        let out_sudoku = msolve::solve(&sudoku);
-        for (r, s) in result.iter_mut().zip(out_sudoku.iter()) {
-            *r = [b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9'][*s as usize];
+        if let Some(out_sudoku) = solver.solve_array(&sudoku) {
+            for (r, s) in result.iter_mut().zip(out_sudoku.iter()) {
+                *r = [b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9'][*s as usize];
+            }
+            match output.write(&result) {
+                Ok(_) => {}
+                Err(_) => println!("Encountered error when writing"),
+            };
         }
-        match output.write(&result) {
-            Ok(_) => {}
-            Err(_) => println!("Encountered error when writing"),
-        };
         sudoku_count += 1;
         line.clear();
     }
