@@ -27,9 +27,7 @@ fn main() {
         std::fs::File::create(matches.value_of("OUTPUT").unwrap()).expect("Failed to open file");
     let mut buf = std::io::BufReader::new(file_in);
     let mut output = std::io::BufWriter::new(file_out);
-    let mut result: [u8; 82] = [b'\n'; 82];
     let mut sudoku_count: u32 = 0;
-    let solver = msolve::Solver::new();
     let mut line = String::with_capacity(81);
     while buf.read_line(&mut line).unwrap() > 0 {
         if line.len() != 82 && line.len() != 81 {
@@ -37,37 +35,17 @@ fn main() {
             line.clear();
             continue;
         }
-        let mut sudoku: [u8; 81] = [0; 81];
-        for (square, char) in sudoku.iter_mut().zip(line.chars()) {
-            *square = match char {
-                ' ' => 0,
-                '?' => 0,
-                '.' => 0,
-                '0' => 0,
-                '1' => 1,
-                '2' => 2,
-                '3' => 3,
-                '4' => 4,
-                '5' => 5,
-                '6' => 6,
-                '7' => 7,
-                '8' => 8,
-                '9' => 9,
-                v => {
-                    println!("Invalid char:{:?} in line: {:?}", v, line);
-                    line.clear();
-                    break;
-                }
-            };
-        }
-        if let Some(out_sudoku) = solver.solve_array(&sudoku) {
-            for (r, s) in result.iter_mut().zip(out_sudoku.iter()) {
-                *r = [b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9'][*s as usize];
-            }
-            match output.write(&result) {
-                Ok(_) => {}
-                Err(_) => println!("Encountered error when writing"),
-            };
+        if let Some(out_sudoku) = msolve::SudokuStruct::from(&line).solve() {
+            output
+                .write_all(
+                    &out_sudoku
+                        .to_array()
+                        .iter()
+                        .map(|x| x.to_string().as_bytes()[0])
+                        .collect::<Vec<u8>>(),
+                )
+                .unwrap();
+            output.write_all(b"\n").unwrap();
         }
         sudoku_count += 1;
         line.clear();
