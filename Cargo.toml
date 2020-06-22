@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 clap = "2.32.0"
-msolve = { git = "https://github.com/mkb2091/msolve" }
+msolve = "0.1"
 
 [profile.release]
 opt-level = 3
