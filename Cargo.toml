@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 clap = "2.32.0"
-msolve = "0.1"
+msolve = "0.2"
 
 [profile.release]
 opt-level = 3

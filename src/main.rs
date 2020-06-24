@@ -35,7 +35,7 @@ fn main() {
             line.clear();
             continue;
         }
-        if let Some(out_sudoku) = msolve::SudokuStruct::from(&line).solve() {
+        if let Some(out_sudoku) = msolve::Sudoku::from(&line).solve() {
             output
                 .write_all(
                     &out_sudoku
